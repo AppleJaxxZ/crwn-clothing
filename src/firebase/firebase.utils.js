@@ -11,11 +11,21 @@ const config = {
     appId: "1:81884311322:web:ce3caf0933f427107606a3"
   };
 
+
+  //creates a user profileDocument to refrence and collect as data.
+export const createUserProfileDocument = async (userAuth, additionalData) => {
+    if (!userAuth) return;
+    console.log(firestore.doc('users/1234232452345'))
+};
+
+
+//initializes the config
   firebase.initializeApp(config);
 
   export const auth = firebase.auth();
   export const firestore = firebase.firestore();
 
+  //sets up a new googleAuth window to select google account from.
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({prompt: 'select_account'});
   export const signInWithGoogle = () => auth.signInWithPopup(provider);
