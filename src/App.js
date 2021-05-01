@@ -7,6 +7,9 @@ import Header from './components/header/header.component.jsx';
 import SignInAndSignUp from './pages/sign-in-and-sign-up/sign-in-and-sign-up.component.jsx';
 import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 
+import { setCurrentUser } from './redux/user/user.actions';
+
+import { connect } from 'react-redux';
 
 class App extends React.Component {
   constructor() {
@@ -46,7 +49,7 @@ class App extends React.Component {
   render() {
   return ( 
     <div className="App">
-      <Header currentUser ={this.state.currentUser}/>
+      <Header />
       <Switch>
         <Route exact path='/' component={HomePage} />
         <Route path='/shop' component={ShopPage} />
@@ -57,5 +60,8 @@ class App extends React.Component {
   );
 }
 }
+const mapDispatchToProps = dispatch => ({
 
-export default App;
+})
+// null because we dont need any stateTopProps from our reducer.  
+export default connect(null,)(App);
