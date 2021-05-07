@@ -1,10 +1,10 @@
 import React from "react";
 import "./App.css";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 import HomePage from "./pages/homepage/homepage.component.jsx";
 import ShopPage from "./components/shop/shop.component";
 import Header from "./components/header/header.component.jsx";
-import SignInAndSignUp from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component.jsx";
+import SignInAndSignUp from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
 
 import { setCurrentUser } from "./redux/user/user.actions";
@@ -16,6 +16,7 @@ class App extends React.Component {
 
   componentDidMount() {
     const { setCurrentUser } = this.props;
+
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
@@ -26,31 +27,42 @@ class App extends React.Component {
             ...snapShot.data(),
           });
         });
-      } else {
-        this.setState({ currentUser: userAuth });
       }
+
+      setCurrentUser(userAuth);
     });
   }
+
   componentWillUnmount() {
     this.unsubscribeFromAuth();
   }
 
   render() {
     return (
-      <div className="App">
+      <div>
         <Header />
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route path="/shop" component={ShopPage} />
-          <Route path="/signin" component={SignInAndSignUp} />
+          <Route
+            exact
+            path="/signin"
+            render={() =>
+              this.props.currentUser ? <Redirect to="/" /> : <SignInAndSignUp />
+            }
+          />
         </Switch>
       </div>
     );
   }
 }
 
+const mapStateToProps = ({ user }) => ({
+  currentUser: user.currentUser,
+});
+
 const mapDispatchToProps = (dispatch) => ({
   setCurrentUser: (user) => dispatch(setCurrentUser(user)),
 });
-// null because we dont need any stateTopProps from our reducer. connect is connecting the app with our dispatch
-export default connect(null, mapDispatchToProps)(App);
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
